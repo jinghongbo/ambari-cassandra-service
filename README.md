@@ -25,10 +25,10 @@ sudo git clone https://github.com/Dominion-Digital/ambari-cassandra-service.git 
 ```
 - Restart Ambari
 ```
-#sandbox
+# sandbox
 service ambari restart
 
-#non sandbox
+# non sandbox
 sudo service ambari-server restart
 ```
 
@@ -64,56 +64,56 @@ If you want to specify a different path for data directories on master node and 
   
   export AMBARI_HOST=localhost
   
-  #detect name of cluster
+  # detect name of cluster
   
   output=`curl -u admin:$PASSWORD -i -H 'X-Requested-By: ambari'  http://$AMBARI_HOST:8080/api/v1/clusters`
   
   CLUSTER=`echo $output | sed -n 's/.*"cluster_name" : "\([^\"]*\)".*/\1/p'`
 
-curl -u admin:$PASSWORD -i -H 'X-Requested-By: ambari' -X DELETE http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER/services/$SERVICE
+  curl -u admin:$PASSWORD -i -H 'X-Requested-By: ambari' -X DELETE http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER/services/$SERVICE
 
-#if above errors out, run below first to fully stop the service
-#curl -u admin:$PASSWORD -i -H 'X-Requested-By: ambari' -X PUT -d '{"RequestInfo": {"context" :"Stop $SERVICE via REST"}, "Body": {"ServiceInfo": {"state": "INSTALLED"}}}' http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER/services/$SERVICE
-  ```
-  - Remove artifacts
+  # if above errors out, run below first to fully stop the service
+  curl -u admin:$PASSWORD -i -H 'X-Requested-By: ambari' -X PUT -d '{"RequestInfo": {"context" :"Stop $SERVICE via REST"}, "Body": {"ServiceInfo": {"state": "INSTALLED"}}}' http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER/services/$SERVICE
+
+#### Remove artifacts
   ```
   rm -rf /var/lib/cassandra/*
   
-  #on ambari server
+  # on ambari server
   
   rm -rf /var/lib/ambari-server/resources/stacks/HDP/$VERSION/services/CASSANDRA
   
-  #on all nodes
+  # on all nodes
   
   rm -rf /var/lib/ambari-agent/cache/stacks/HDP/$VERSION/services/CASSANDRA
   
   yum erase cassandra -y
   
   ```
-  - Clean ambari database configuration for cassandra service, else ambari will warn on every start.
+#### Clean ambari database configuration for cassandra service, else ambari will warn on every start.
   https://discuss.pivotal.io/hc/en-us/articles/217649658-How-to-connect-to-Ambari-s-PostgreSQL-database-
   ```
-  #Determine the process ID for the Ambari postgres instance
+  # Determine the process ID for the Ambari postgres instance
   
   ps -eaf | grep ambari | grep postgres | awk '{print $3}'
   
-  #Determine the port that is being used by the Ambari PostgreSQL instance by using the process ID found previously
+  # Determine the port that is being used by the Ambari PostgreSQL instance by using the process ID found previously
   
   netstat -anp | grep 2855
   
-  #Log on to the Ambari database with the command below (default password is 'bigdata')
+  # Log on to the Ambari database with the command below (default password is 'bigdata')
   
   psql ambari -U ambari -W -p 5432
   
-  #Find cassandra configurations
+  # Find cassandra configurations
   
   select config_id, version_tag, version, type_name from clusterconfig c where c.type_name LIKE '%cassandra%';
   
-  #Delete rows
+  # Delete rows
   
   delete from clusterconfig c where c.type_name LIKE '%cassandra%';
   
-  #Exit postgres console
+  # Exit postgres console
   
   \q
   
