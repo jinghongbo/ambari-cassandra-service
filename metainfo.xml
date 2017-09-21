@@ -5,8 +5,8 @@
         <service>
             <name>Cassandra</name>
             <displayName>Cassandra</displayName>
-            <comment>Distributed database</comment>
-            <version>2.1</version>
+            <comment>The Apache Cassandra database is the right choice when you need scalability and high availability without compromising performance.</comment>
+            <version>3.11</version>
             <components>
                <component>
                     <name>Cluster-Hosts</name>
@@ -36,10 +36,7 @@
                     <osFamily>any</osFamily>
                     <packages>
                         <package>
-                            <name>dsc21</name>
-                        </package>
-                        <package>
-                            <name>opscenter</name>
+                            <name>cassandra</name>
                         </package>
                     </packages>
                 </osSpecific>
