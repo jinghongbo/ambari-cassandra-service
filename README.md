@@ -21,7 +21,7 @@ ssh root@sandbox.hortonworks.com
 - To download the Cassandra service folder, run below
 ```
 VERSION=`hdp-select status hadoop-client | sed 's/hadoop-client - \([0-9]\.[0-9]\).*/\1/'`
-sudo git clone https://github.com/Symantec/ambari-cassandra-service.git   /var/lib/ambari-server/resources/stacks/HDP/$VERSION/services/CASSANDRA   
+sudo git clone https://github.com/Dominion-Digital/ambari-cassandra-service.git   /var/lib/ambari-server/resources/stacks/HDP/$VERSION/services/CASSANDRA   
 ```
 - Restart Ambari
 ```
@@ -35,11 +35,16 @@ sudo service ambari-server restart
 - Then you can click on 'Add Service' from the 'Actions' dropdown menu in the bottom left of the Ambari dashboard:
 
 On bottom left -> Actions -> Add service -> check Cassandra -> Next -> check nodes to be present in the cluster and act as client-> Next -> Change any config you like (e.g. install dir, memory sizes, num containers or values in cassandra.yaml) -> Next -> Deploy
-Add the Ip address of all the seed nodes in the ring. It can be 1 to many. Add comma separated IP/Hostname value in quotes
+Add the Ip address of all the seed nodes in the ring. It can be 1 to many. Add comma separated IP/Hostname value in quotes.
+
+If you want to specify a different path for data directories on master node and slaves nodes change this parameters.
+- master_nodes_ips ('none' if all nodes must have the same config (slave_data_file_directories will be used), comma separated values instead.)
+- master_data_file_directories [comma separated values]
+- slave_data_file_directories [comma separated values]
 
  ![Image](../master/screenshots/Initial-config.png?raw=true)
 
-- On successful deployment you will see the Cassaandra service as part of Ambari stack and will be able to start/stop the service from here:
+- On successful deployment you will see the Cassandra service as part of Ambari stack and will be able to start/stop the service from here:
  ![Image](../master/screenshots/Installed-service-stop.png?raw=true)
 
 - You can see the parameters you configured under 'Configs' tab
@@ -69,21 +74,34 @@ curl -u admin:$PASSWORD -i -H 'X-Requested-By: ambari' -X DELETE http://$AMBARI_
   ```
   rm -rf /var/lib/cassandra/*
   
+  #on ambari server
+  rm -rf /var/lib/ambari-server/resources/stacks/HDP/$VERSION/services/CASSANDRA
+  
+  #on all nodes
+  rm -rf /var/lib/ambari-agent/cache/stacks/HDP/$VERSION/services/CASSANDRA
+  yum erase cassandra -y
+  
+  ```
+  - Clean ambari databse configuration for cassandra service, else ambari will warn on every start.
+  https://discuss.pivotal.io/hc/en-us/articles/217649658-How-to-connect-to-Ambari-s-PostgreSQL-database-
+  ```
+  #Determine the process ID for the Ambari postgres instance
+  ps -eaf | grep ambari | grep postgres | awk '{print $3}'
+  #Determine the port that is being used by the Ambari PostgreSQL instance by using the process ID found previously
+  netstat -anp | grep 2855
+  #Log on to the Ambari database with the command below (default password is 'bigdata')
+  psql ambari -U ambari -W -p 5432
+  #Find cassandra configurations
+  select config_id, version_tag, version, type_name from clusterconfig c where c.type_name LIKE '%cassandra%';
+  #Delete rows
+  delete from clusterconfig c where c.type_name LIKE '%cassandra%';
+  #Exit postgres console
+  \q
+  
   ```   
   
-# Contributions
-Prior to receiving information from any contributor, Symantec requires that all contributors complete, sign, and submit Symantec Personal Contributor Agreement (SPCA). The purpose of the SPCA is to clearly define the terms under which intellectual property has been contributed to the project and thereby allow Symantec to defend the project should there be a legal dispute regarding the software at some future time. A signed SPCA is required to be on file before an individual is given commit privileges to the Symantec open source project. Please note that the privilege to commit to the project is conditional and may be revoked by Symantec.
-
-If you are employed by a corporation, a Symantec Corporate Contributor Agreement (SCCA) is also required before you may contribute to the project. If you are employed by a company, you may have signed an employment agreement that assigns intellectual property ownership in certain of your ideas or code to your company. We require a SCCA to make sure that the intellectual property in your contribution is clearly contributed to the Symantec open source project, even if that intellectual property had previously been assigned by you.
-
-Please complete the SPCA and, if required, the SCCA and return to Symantec at:
-
-Symantec Corporation Legal Department Attention: Product Legal Support Team 350 Ellis Street Mountain View, CA 94043
-
-Please be sure to keep a signed copy for your records.
-
 # License
-Copyright 2016 Symantec Corporation.
+Copyright 2017 DOMINION.
 
 Licensed under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License.
 
