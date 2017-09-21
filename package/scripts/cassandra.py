@@ -18,22 +18,49 @@ limitations under the License.
 from resource_management import *
 from properties_config import properties_config
 import sys
+import os
 from copy import deepcopy
 
+def getDirectoriesToCreate( dirs ):
+    "This checks if exists the intermediate directories"
+    output = []
+    for dir in dirs:
+        folders = dir.split('/')
+        tmpFolder = ''
+        for folder in folders[1:]:
+            tmpFolder += '/' + folder
+            if not os.path.isdir(tmpFolder):
+                output.append(tmpFolder)
+        output.append(dir)
+    return output
+	
 def cassandra():
-    import params
-
-    Directory([params.log_dir, params.pid_dir, params.conf_dir],
-              owner=params.cassandra_user,
-              group=params.user_group,
-              recursive=True
+    import params_dirs
+	
+    Directory([params_dirs.log_dir, params_dirs.pid_dir, params_dirs.conf_dir],
+              owner=params_dirs.cassandra_user,
+              group=params_dirs.user_group
           )
-    configurations = params.config['configurations']['cassandra-site']
+	
+	# Parametros intermedios para convertir en data_file_directories
+	# master_nodes_ips					<-- 'none' or comma separated values
+	# master_data_file_directories		<-- comma separated values directories for store data on the master(s)
+	# slave_data_file_directories		<-- comma separated values directories for store data on the slave(s) 
+	
+	# Aqui va el directorio bueno bueno, por defecto el de los slaves (el mas probable)
+    dirs = params_dirs.slave_data_file_directories.split(',')
+	
+    if params_dirs.master_nodes_ips != 'none':
+        mni = params_dirs.master_nodes_ips.split(',')
+        if params_dirs.listen_address in mni:
+            dirs = params_dirs.master_data_file_directories.split(',')
+			
+    Directory(getDirectoriesToCreate(dirs), owner=params_dirs.cassandra_user, group=params_dirs.user_group)
 
     File(format("{conf_dir}/cassandra.yaml"),
-       content=Template(
-                        "cassandra.master.yaml.j2", 
-                        configurations = configurations),
-       owner=params.cassandra_user,
-       group=params.user_group 
+        content=Template(
+        "cassandra.master.yaml.j2", 
+        configurations = params_dirs),
+        owner=params_dirs.cassandra_user,
+        group=params_dirs.user_group 
     )

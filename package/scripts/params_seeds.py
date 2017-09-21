@@ -13,29 +13,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from resource_management.libraries.functions.version import format_stack_version, compare_versions
 from resource_management import *
-import signal
-import sys
-import os
-from os.path import isfile
-from cassandra import cassandra
+import commands
 
-class clients(Script):
-    def configure(self,env):
-        #import params
-        #env.set_params(params)
-        print 'Client configure'
-        cassandra()
+# server configurations
+config = Script.get_config()
 
-    def status(self, env):
-        print 'Client status'
-        raise ClientComponentHasNoStatus()
-
-    def install(self,env):
-        import params
-        env.set_params(params)
-        print 'Install the client'
-        self.install_packages(env)
-
-if __name__ == "__main__":
-  clients().execute()
+seed_provider_parameters_seeds = config['configurations']['cassandra-site']['seed_provider_parameters_seeds']
+native_transport_port=config['configurations']['cassandra-site']['native_transport_port']

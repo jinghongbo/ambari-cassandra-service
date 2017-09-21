@@ -16,14 +16,14 @@ limitations under the License.
 from __future__ import print_function
 from resource_management import *
 import  sys,subprocess,os
-import requests
+#import requests
 import time
 
 class ServiceCheck(Script):
     def service_check(self, env):
-        import params
-        env.set_params(params)
-        seeds = params.seed_provider_parameters_seeds[1:-1].split(",")
+        import params_seeds
+        env.set_params(params_seeds)
+        seeds = params_seeds.seed_provider_parameters_seeds[1:-1].split(",")
         host=seeds[0]
         cmdfile=format("/tmp/cmds")
         File(cmdfile,

@@ -1,18 +1,29 @@
 cluster_name: {{cluster_name_py}}
 num_tokens: {{num_tokens}}
 hinted_handoff_enabled: {{hinted_handoff_enabled}}
+max_hint_window_in_ms: {{max_hint_window_in_ms}}
 hinted_handoff_throttle_in_kb: {{hinted_handoff_throttle_in_kb}}
 max_hints_delivery_threads: {{max_hints_delivery_threads}}
+hints_directory: {{hints_directory}}
+hints_flush_period_in_ms: {{hints_flush_period_in_ms}}
+max_hints_file_size_in_mb: {{max_hints_file_size_in_mb}}
 batchlog_replay_throttle_in_kb: {{batchlog_replay_throttle_in_kb}}
 authenticator: {{authenticator}}
 authorizer: {{authorizer}}
+role_manager: {{role_manager}}
+roles_validity_in_ms: {{roles_validity_in_ms}}
 permissions_validity_in_ms: {{permissions_validity_in_ms}}
+credentials_validity_in_ms: {{credentials_validity_in_ms}}
 partitioner: {{partitioner}}
-data_file_directories:
-    - {{data_file_directories}}
+data_file_directories: 
+{{data_file_directories_py}}
 commitlog_directory: {{commitlog_directory}}
+cdc_enabled: {{cdc_enabled}}
 disk_failure_policy: {{disk_failure_policy}}
 commit_failure_policy: {{commit_failure_policy}}
+prepared_statements_cache_size_mb: {{prepared_statements_cache_size_mb}}
+thrift_prepared_statements_cache_size_mb: {{thrift_prepared_statements_cache_size_mb}}
+key_cache_size_in_mb: {{key_cache_size_in_mb}}
 key_cache_size_in_mb: {{key_cache_size_in_mb}}
 key_cache_save_period: {{key_cache_save_period}}
 row_cache_size_in_mb: {{row_cache_size_in_mb}}
@@ -30,7 +41,9 @@ seed_provider:
 concurrent_reads: {{concurrent_reads}}
 concurrent_writes: {{concurrent_writes}}
 concurrent_counter_writes: {{concurrent_counter_writes}}
+concurrent_materialized_view_writes: {{concurrent_materialized_view_writes}}
 memtable_allocation_type: {{memtable_allocation_type}}
+index_summary_capacity_in_mb: {{index_summary_capacity_in_mb}}
 index_summary_capacity_in_mb: {{index_summary_capacity_in_mb}}
 index_summary_resize_interval_in_minutes: {{index_summary_resize_interval_in_minutes}}
 trickle_fsync: {{trickle_fsync}}
@@ -53,6 +66,7 @@ auto_snapshot: {{auto_snapshot}}
 tombstone_warn_threshold: {{tombstone_warn_threshold}}
 tombstone_failure_threshold: {{tombstone_failure_threshold}}
 column_index_size_in_kb: {{column_index_size_in_kb}}
+column_index_cache_size_in_kb: {{column_index_cache_size_in_kb}}
 batch_size_warn_threshold_in_kb: {{batch_size_warn_threshold_in_kb}}
 compaction_throughput_mb_per_sec: {{compaction_throughput_mb_per_sec}}
 compaction_large_partition_warning_threshold_mb: {{compaction_large_partition_warning_threshold_mb}}
@@ -64,6 +78,7 @@ counter_write_request_timeout_in_ms: {{counter_write_request_timeout_in_ms}}
 cas_contention_timeout_in_ms: {{cas_contention_timeout_in_ms}}
 truncate_request_timeout_in_ms: {{truncate_request_timeout_in_ms}}
 request_timeout_in_ms: {{request_timeout_in_ms}}
+slow_query_log_timeout_in_ms: {{slow_query_log_timeout_in_ms}}
 cross_node_timeout: {{cross_node_timeout}}
 endpoint_snitch: {{endpoint_snitch}}
 dynamic_snitch_update_interval_in_ms: {{dynamic_snitch_update_interval_in_ms}}
@@ -80,6 +95,34 @@ client_encryption_options:
     enabled: {{client_encryption_options_enabled}}
     keystore: {{client_encryption_options_keystore}}
     keystore_password: {{client_encryption_options_keystore_password}}
-
 internode_compression: {{internode_compression}}
 inter_dc_tcp_nodelay: {{inter_dc_tcp_nodelay}}
+inter_dc_tcp_nodelay: {{inter_dc_tcp_nodelay}}
+tracetype_query_ttl: {{tracetype_query_ttl}}
+tracetype_repair_ttl: {{tracetype_repair_ttl}}
+enable_user_defined_functions: {{enable_user_defined_functions}}
+enable_scripted_user_defined_functions: {{enable_scripted_user_defined_functions}}
+transparent_data_encryption_options:
+    enabled: {{tdeo_enabled}}
+    chunk_length_kb: {{tdeo_chunk_length_kb}}
+    cipher: {{tdeo_cipher}}
+    key_alias: {{tdeo_key_alias_testing}}
+    key_provider: 
+      - class_name: {{tdeo_class_name}}
+        parameters: 
+          - keystore: {{tdeo_keystore}}
+            keystore_password: {{tdeo_keystore_password}}
+            store_type: {{tdeo_store_type}}
+            key_password: {{tdeo_key_password}}
+batch_size_fail_threshold_in_kb: {{batch_size_fail_threshold_in_kb}}
+unlogged_batch_across_partitions_warn_threshold: {{unlogged_batch_across_partitions_warn_threshold}}
+gc_warn_threshold_in_ms: {{gc_warn_threshold_in_ms}}
+back_pressure_enabled: {{back_pressure_enabled}}
+back_pressure_strategy:
+    - class_name: {{back_pressure_strategy_class_name}}
+      parameters:
+        - high_ratio: {{back_pressure_strategy_parameters_high_ratio}}
+          factor: {{back_pressure_strategy_parameters_factor}}
+          flow: {{back_pressure_strategy_parameters_flow}}
+auto_bootstrap: {{auto_bootstrap}}
+windows_timer_interval: {{windows_timer_interval}}

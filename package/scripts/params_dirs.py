@@ -17,6 +17,15 @@ from resource_management.libraries.functions.version import format_stack_version
 from resource_management import *
 import commands
 
+def getPrettyDataDirectories( str ):
+	"This builds a string for the yaml file"
+	outputStr = ''
+	dirs = str.split(',')
+	for dir in dirs:
+		outputStr += '    - ' + dir + '\r\n'
+
+	return outputStr
+
 # server configurations
 config = Script.get_config()
 
@@ -53,6 +62,19 @@ a,listen_address=commands.getstatusoutput("hostname -i | awk '{print $NF}'")
 start_native_transport=config['configurations']['cassandra-site']['start_native_transport']
 native_transport_port=config['configurations']['cassandra-site']['native_transport_port']
 start_rpc=config['configurations']['cassandra-site']['start_rpc']
+
+# Parametros intermedios para convertir en data_file_directories
+# master_nodes_ips					<-- 'none' or comma separated values
+# master_data_file_directories		<-- comma separated values directories for store data on the master(s)
+# slave_data_file_directories		<-- comma separated values directories for store data on the slave(s) 
+
+# Aqui va el directorio bueno bueno, por defecto el de los slaves (el mas probable)
+data_file_directories_py = getPrettyDataDirectories( slave_data_file_directories )
+
+if master_nodes_ips != 'none':
+	mni = master_nodes_ips.split(',')
+	if listen_address in mni:
+		data_file_directories_py = getPrettyDataDirectories( master_data_file_directories )
 
 hints_directory=config['configurations']['cassandra-site']['hints_directory']
 commitlog_directory=config['configurations']['cassandra-site']['commitlog_directory']

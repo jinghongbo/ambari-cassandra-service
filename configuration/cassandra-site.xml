@@ -27,6 +27,11 @@
 		<description>Enable or disable hinted handoff</description>
 	</property>
 	<property>
+		<name>max_hint_window_in_ms</name>
+		<value>10800000</value>
+		<description>This defines the maximum amount of time a dead host will have hints generated</description>
+	</property>
+	<property>
 		<name>hinted_handoff_throttle_in_kb</name>
 		<value>1024</value>
 		<description>Maximum throttle per delivery thread in kilobytes per
@@ -36,10 +41,23 @@
 	<property>
 		<name>max_hints_delivery_threads</name>
 		<value>2</value>
-		<description>Number of threads with which to deliver hints.
-		</description>
+		<description>Number of threads with which to deliver hints.</description>
 	</property>
-
+	<property>
+		<name>hints_directory</name>
+		<value>/var/lib/cassandra/hints</value>
+		<description>Directory where Cassandra should store hints.</description>
+	</property>
+	<property>
+		<name>hints_flush_period_in_ms</name>
+		<value>10000</value>
+		<description>How often hints should be flushed from the internal buffers to disk</description>
+	</property>
+	<property>
+		<name>max_hints_file_size_in_mb</name>
+		<value>128</value>
+		<description>Maximum size for a single hints file, in megabytes</description>
+	</property>
 	<property>
 		<name>batchlog_replay_throttle_in_kb</name>
 		<value>1024</value>
@@ -59,11 +77,25 @@
 			to limit access and provide permissions
 		</description>
 	</property>
-
+	<property>
+		<name>role_manager</name>
+		<value>CassandraRoleManager</value>
+		<description>CassandraRoleManager stores role data in the system_auth keyspace</description>
+	</property>
+	<property>
+		<name>roles_validity_in_ms</name>
+		<value>2000</value>
+		<description>Validity period for roles cache</description>
+	</property>
 	<property>
 		<name>permissions_validity_in_ms</name>
 		<value>2000</value>
 		<description>How long permissions in cache remain valid</description>
+	</property>
+	<property>
+		<name>credentials_validity_in_ms</name>
+		<value>2000</value>
+		<description>Validity period for credentials cache</description>
 	</property>
 	<property>
 		<name>partitioner</name>
@@ -73,18 +105,30 @@
 		</description>
 	</property>
 	<property>
-		<name>data_file_directories</name>
-		<value>/var/lib/cassandra/data</value>
-		<description>the directory location where table data (SSTables) is
-			stored
-		</description>
+		<name>master_nodes_ips</name>
+		<value>none</value>
+		<description>The IPs of the master nodes to apply the param master_data_file_directories, 'none' if all nodes must have the same config (slave_data_file_directories will be used), comma separated values instead.</description>
 	</property>
-
+	<property>
+		<name>master_data_file_directories</name>
+		<value>/var/lib/cassandra/data</value>
+		<description>The directory location where table data (SSTables) is stored in MASTER(s) node(s). [comma separated values]</description>
+	</property>
+	<property>
+		<name>slave_data_file_directories</name>
+		<value>/var/lib/cassandra/data</value>
+		<description>The directory location where table data (SSTables) is stored in SLAVE(s) node(s). [comma separated values]</description>
+	</property>
 	<property>
 		<name>commitlog_directory</name>
 		<value>/var/lib/cassandra/commitlog</value>
 		<description>The directory where the commit log is stored
 		</description>
+	</property>
+	<property>
+		<name>cdc_enabled</name>
+		<value>false</value>
+		<description>Enable / disable CDC functionality on a per-node basis</description>
 	</property>
 	<property>
 		<name>disk_failure_policy</name>
@@ -97,7 +141,21 @@
 		<value>stop</value>
 		<description>Policy for commit disk failures</description>
 	</property>
-
+	<property>
+		<name>prepared_statements_cache_size_mb</name>
+		<value>10</value>
+		<description>Maximum size of the native protocol prepared statement cache</description>
+	</property>
+	<property>
+		<name>thrift_prepared_statements_cache_size_mb</name>
+		<value>10</value>
+		<description>Maximum size of the Thrift prepared statement cache</description>
+	</property>
+	<property>
+		<name>key_cache_size_in_mb</name>
+		<value>0</value>
+		<description>Maximum size of the key cache in memory</description>
+	</property>
 	<property>
 		<name>key_cache_save_period</name>
 		<value>14400</value>
@@ -163,9 +221,19 @@
 		<description></description>
 	</property>
 	<property>
+		<name>concurrent_materialized_view_writes</name>
+		<value>32</value>
+		<description>For materialized view writes</description>
+	</property>
+	<property>
 		<name>memtable_allocation_type</name>
 		<value>heap_buffers</value>
 		<description></description>
+	</property>
+	<property>
+		<name>index_summary_capacity_in_mb</name>
+		<value></value>
+		<description>A fixed memory pool size in MB for for SSTable index summaries</description>
 	</property>
 	<property>
 		<name>index_summary_resize_interval_in_minutes</name>
@@ -223,11 +291,11 @@
 		<value>9160</value>
 		<description></description>
 	</property>
-	<property>
+	<!--<property>
 		<name>broadcast_rpc_address</name>
 		<value>1.2.3.4</value>
 		<description></description>
-	</property>
+	</property>-->
 	<property>
 		<name>rpc_keepalive</name>
 		<value>true</value>
@@ -272,6 +340,11 @@
 		<name>column_index_size_in_kb</name>
 		<value>64</value>
 		<description></description>
+	</property>
+	<property>
+		<name>column_index_cache_size_in_kb</name>
+		<value>2</value>
+		<description>Per sstable indexed key cache entries</description>
 	</property>
 	<property>
 		<name>batch_size_warn_threshold_in_kb</name>
@@ -340,7 +413,11 @@
 		<value>10000</value>
 		<description></description>
 	</property>
-
+	<property>
+		<name>slow_query_log_timeout_in_ms</name>
+		<value>500</value>
+		<description>How long before a node logs slow queries</description>
+	</property>
 	<property>
 		<name>cross_node_timeout</name>
 		<value>false</value>
@@ -477,5 +554,126 @@
 		<name>client_encryption_options_keystore_password</name>
 		<value>cassandra</value>
 		<description></description>
+	</property>
+	
+	<property>
+		<name>inter_dc_tcp_nodelay</name>
+		<value>false</value>
+		<description>Enable or disable tcp_nodelay for inter-dc communication</description>
+	</property>
+	<property>
+		<name>tracetype_query_ttl</name>
+		<value>86400</value>
+		<description>TTL for different trace types used during logging of the repair process</description>
+	</property>
+	<property>
+		<name>tracetype_repair_ttl</name>
+		<value>604800</value>
+		<description>TTL for different trace types used during logging of the repair process</description>
+	</property>
+	<property>
+		<name>enable_user_defined_functions</name>
+		<value>false</value>
+		<description></description>
+	</property>
+	<property>
+		<name>enable_scripted_user_defined_functions</name>
+		<value>false</value>
+		<description>Enables scripted UDFs (JavaScript UDFs)</description>
+	</property>
+	<property>
+		<name>tdeo_enabled</name>
+		<value>false</value>
+		<description>Enables encrypting data at-rest</description>
+	</property>
+	<property>
+		<name>tdeo_chunk_length_kb</name>
+		<value>64</value>
+		<description>Enables encrypting data at-rest</description>
+	</property>
+	<property>
+		<name>tdeo_cipher</name>
+		<value>AES/CBC/PKCS5Padding</value>
+		<description>Enables encrypting data at-rest</description>
+	</property>
+	<property>
+		<name>tdeo_key_alias_testing</name>
+		<value>testing:1</value>
+		<description>Enables encrypting data at-rest</description>
+	</property>
+	<property>
+		<name>tdeo_class_name</name>
+		<value>org.apache.cassandra.security.JKSKeyProvider</value>
+		<description>Enables encrypting data at-rest</description>
+	</property>
+	<property>
+		<name>tdeo_keystore</name>
+		<value>conf/.keystore</value>
+		<description>Enables encrypting data at-rest</description>
+	</property>
+	<property>
+		<name>tdeo_keystore_password</name>
+		<value>cassandra</value>
+		<description>Enables encrypting data at-rest</description>
+	</property>
+	<property>
+		<name>tdeo_store_type</name>
+		<value>JCEKS</value>
+		<description>Enables encrypting data at-rest</description>
+	</property>
+	<property>
+		<name>tdeo_key_password</name>
+		<value>cassandra</value>
+		<description>Enables encrypting data at-rest</description>
+	</property>
+	<property>
+		<name>batch_size_fail_threshold_in_kb</name>
+		<value>50</value>
+		<description>Fail any multiple-partition batch exceeding this value</description>
+	</property>
+	<property>
+		<name>unlogged_batch_across_partitions_warn_threshold</name>
+		<value>10</value>
+		<description>Log WARN on any batches not of type LOGGED than span across more partitions than this limit</description>
+	</property>
+	<property>
+		<name>gc_warn_threshold_in_ms</name>
+		<value>100</value>
+		<description>Log a warning when compacting partitions larger than this value</description>
+	</property>
+	<property>
+		<name>back_pressure_enabled</name>
+		<value>false</value>
+		<description>Back-pressure settings</description>
+	</property>
+	<property>
+		<name>back_pressure_strategy_class_name</name>
+		<value>org.apache.cassandra.net.RateBasedBackPressure</value>
+		<description>The back-pressure strategy applied</description>
+	</property>
+	<property>
+		<name>back_pressure_strategy_parameters_high_ratio</name>
+		<value>0.90</value>
+		<description>The back-pressure strategy applied</description>
+	</property>
+	<property>
+		<name>back_pressure_strategy_parameters_factor</name>
+		<value>5</value>
+		<description>The back-pressure strategy applied</description>
+	</property>
+	<property>
+		<name>back_pressure_strategy_parameters_flow</name>
+		<value>FAST</value>
+		<description>The back-pressure strategy applied</description>
+	</property>
+	<property>
+		<name>auto_bootstrap</name>
+		<value>false</value>
+		<description>Allow bootstrap of keys at startup</description>
+	</property>
+	<property>
+		<name>windows_timer_interval</name>
+		<value>1</value>
+		<description>The default Windows kernel timer and scheduling resolution is 15.6ms for power conservation</description>
 	</property>
 </configuration>
