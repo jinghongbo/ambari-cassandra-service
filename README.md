@@ -58,12 +58,17 @@ If you want to specify a different path for data directories on master node and 
   - Unregister the service
 
   ```
-export SERVICE=Cassandra
-export PASSWORD=admin
-export AMBARI_HOST=localhost
-#detect name of cluster
-output=`curl -u admin:$PASSWORD -i -H 'X-Requested-By: ambari'  http://$AMBARI_HOST:8080/api/v1/clusters`
-CLUSTER=`echo $output | sed -n 's/.*"cluster_name" : "\([^\"]*\)".*/\1/p'`
+  export SERVICE=Cassandra
+  
+  export PASSWORD=admin
+  
+  export AMBARI_HOST=localhost
+  
+  #detect name of cluster
+  
+  output=`curl -u admin:$PASSWORD -i -H 'X-Requested-By: ambari'  http://$AMBARI_HOST:8080/api/v1/clusters`
+  
+  CLUSTER=`echo $output | sed -n 's/.*"cluster_name" : "\([^\"]*\)".*/\1/p'`
 
 curl -u admin:$PASSWORD -i -H 'X-Requested-By: ambari' -X DELETE http://$AMBARI_HOST:8080/api/v1/clusters/$CLUSTER/services/$SERVICE
 
