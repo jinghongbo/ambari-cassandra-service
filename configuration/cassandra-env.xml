@@ -4,16 +4,37 @@
 <configuration>
    <property>
     <name>cassandra_user</name>
+    <display-name>Cassandra User</display-name>
     <value>cassandra</value>
     <property-type>USER</property-type>
-    <description></description>
+    <description>Cassandra User</description>
+    <value-attributes>
+      <type>user</type>
+      <overridable>false</overridable>
+      <user-groups>
+        <property>
+          <type>cluster-env</type>
+          <name>user_group</name>
+        </property>
+        <property>
+          <type>cassandra-env</type>
+          <name>cassandra_group</name>
+        </property>
+      </user-groups>
+    </value-attributes>
+    <on-ambari-upgrade add="false"/>
   </property>
   <property>
-   <name>smoke_test_user</name>
-   <value>smoke</value>
-   <property-type>USER</property-type>
-   <description></description>
- </property>
+    <name>cassandra_group</name>
+    <display-name>Cassandra Group</display-name>
+    <value>livy</value>
+    <property-type>GROUP</property-type>
+    <description>cassandra group</description>
+    <value-attributes>
+      <type>user</type>
+    </value-attributes>
+    <on-ambari-upgrade add="false"/>
+  </property>
   <property>
     <name>cassandra_log_dir</name>
     <value>/var/log/cassandra</value>
